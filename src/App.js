@@ -1,26 +1,59 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+  NavLink,
+} from "react-router-dom";
 
-function App() {
+import BookList from "./BookList";
+import BookDetails from "./BookDetails";
+import BookCreate from "./BookCreate";
+import { bookApi } from "./BookApi";
+
+const resetStore = () => {
+  bookApi("delete", "book", () => {
+    window.location.reload();
+  });
+};
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
+    <Router>
+      <div className="ui menu">
+        <NavLink to="/books" exact className="item" activeClassName="active">
+          Bücher
+        </NavLink>
+        <NavLink to="/books/new" className="item" activeClassName="active">
+          Büch einfügen +
+        </NavLink>
+        <a onClick={resetStore} className="item right">
+          Reset Store
         </a>
-      </header>
-    </div>
+      </div>
+
+      <Switch>
+        <Route path="/books/new">
+          <BookCreate />
+        </Route>
+
+        <Route path="/books/:isbn">
+          <BookDetails />
+        </Route>
+
+        <Route path="/books">
+          <BookList />
+        </Route>
+
+        <Route path="/404">
+          <p>404</p>
+        </Route>
+
+        <Route exact path="">
+          <Redirect to="/home" />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
-
-export default App;
